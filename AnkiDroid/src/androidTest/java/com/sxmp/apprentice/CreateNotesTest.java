@@ -3,7 +3,10 @@ package com.sxmp.apprentice;
 import android.content.res.Resources;
 import android.view.View;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -12,6 +15,7 @@ import androidx.test.filters.LargeTest;
 import com.ichi2.anki.DeckPicker;
 import com.ichi2.anki.R;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,10 +75,8 @@ public class CreateNotesTest {
         onView(isRoot()).perform(closeSoftKeyboard());
     }
 
-    private final String FRONTTESTSTR = "aeoinbaroa~!@#$%^&*()_)+_)(^$~iehri" +
-            "lfuawhne;fvpoj:!?45627120-45342fasefpokjo1637849350ç˙∆˚µœ∑´´†¥¨¨˚¬øπ“…≥¬≤µ˜˜√ç∂ƒ®©††®´";
-    private final String BACKTESTSTR = "fawoeifjn_)(*&^%$#98137w03-40ikpjfo498293990981-0987421=" +
-            "¨¨ˆˆ¥†ƒ∂®´´®¥∂†ƒ¥¨ˆˆˆˆ≠–ºª•¶§¬≤¬˚¬øπ¬…œ˚≤¬ø∆ˆˆ¨¨©ç¨¨89023ejngkbrglesuidjf";
+    private final String FRONTTESTSTR = "Testing with Front String";
+    private final String BACKTESTSTR = "Testing with Back String";
 
     @Test
     public void noteEditorDidLoadTest() {
@@ -177,5 +179,76 @@ public class CreateNotesTest {
                 isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
                         withId(R.id.toolbar)))))
                 .perform(click());
+
+        //Open the navigation drawer
+        onView(allOf(withClassName(endsWith("AppCompatImageButton")),
+                withContentDescription("Navigate up"),
+                isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
+                        withId(R.id.toolbar)))))
+                .perform(click());
+
+        //Click on the Card Browser item
+        onView(withId(R.id.nav_browser))
+                .perform(click());
+
+        //Click the toolbar spinner to open
+        onView(allOf(withClassName(endsWith("AppCompatSpinner")),
+                withId(R.id.toolbar_spinner),
+                isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
+                        withId(R.id.toolbar)))))
+                .perform(click());
+
+        //Select the "All decks" deck to test finding new note
+        onView(withText("All decks"))
+                .perform(click());
+
+        //Verify toolbar spinner says "All decks"
+        onView(allOf(withId(R.id.dropdown_deck_name),
+                withClassName(endsWith("FixedTextView")),
+                isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
+                        withId(R.id.toolbar)))))
+                .check(matches(withText(containsString("All decks"))));
+
+        //Select Search item
+        onView(allOf(withId(R.id.action_search),
+                withClassName(endsWith("ActionMenuItemView")),
+                withContentDescription("Search")))
+                .perform(click());
+
+        //Search for note according to the Front and Back texts
+        onView(allOf(withId(R.id.action_search),
+                withClassName(endsWith("SearchView"))))
+                .perform(replaceTextAndSubmitSearchView(FRONTTESTSTR + " " + BACKTESTSTR));
+
+        //Clear the SearchView text
+        onView(allOf(withId(R.id.search_close_btn),
+                withContentDescription("Clear query"),
+                withClassName(endsWith("AppCompatImageView")),
+                isDescendantOfA(withId(R.id.search_plate))))
+                .perform(click(), closeSoftKeyboard());
+
+        //Check if the new note
+        onView(withText(FRONTTESTSTR)).check(matches(isDisplayed()));
     }
+
+    public static ViewAction replaceTextAndSubmitSearchView(String text) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return withClassName(endsWith("SearchView"));
+            }
+
+            @Override
+            public String getDescription() {
+                return "replaceTextSearchView ViewAction";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                SearchView searchView = (SearchView) view;
+                searchView.setQuery(text, true);
+            }
+        };
+    }
+
 }
