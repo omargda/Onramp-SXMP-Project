@@ -28,6 +28,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -48,7 +49,7 @@ import static org.hamcrest.Matchers.is;
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 
-public class NoteTagsTest {
+public class NoteTagAddTest {
 
     @Rule
     public ActivityScenarioRule<DeckPicker> deckPickerActivityForTagScenarioRule
@@ -58,7 +59,14 @@ public class NoteTagsTest {
 
     private String FRONT_TAG_TEST_NICE_STR = "Tag test note front";
     private String BACK_TAG_TEST_NICE_STR = "Tag test note back";
-    private String TAG_NAME;
+    private String TAG_NAME = "" + (new Random().nextInt(10000000));
+    private String TAG_NAME_GIBBERISH = "q!°9#Ò!.∆—u‰Å⁄¶ı“—g`";
+    private String TAG_NAME_LONG = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" +
+            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" +
+            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" +
+            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" +
+            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" +
+            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
 
     @Before
     public void setUp() {
@@ -71,7 +79,7 @@ public class NoteTagsTest {
                     }
                 });
 
-        TAG_NAME = "" + (new Random().nextInt(10000000));
+        //TAG_NAME = "" + (new Random().nextInt(10000000));
 
         onView(withId(R.id.fab_expand_menu_button)).perform(click());
         onView(withId(R.id.add_note_action)).perform(click());
@@ -122,8 +130,8 @@ public class NoteTagsTest {
      * Helper method to set up the necessary "Add note" fields since Tags need to be
      * created along with a note, or else it's not created.
      */
-    private void createTagHelper(String noteTypeStr, String noteDeckStr,
-                                 String noteFrontStr, String noteBackStr) {
+    private void setUpNote(String noteTypeStr, String noteDeckStr,
+                           String noteFrontStr, String noteBackStr) {
         //Set the Type Spinner to noteTypeStr and verify
         onView(withId(R.id.note_type_spinner)).perform(scrollTo(), click());
         onData(allOf(is(instanceOf(String.class)), is(noteTypeStr)))
@@ -198,14 +206,9 @@ public class NoteTagsTest {
         addTagDialogDidShowHelper();
     }
 
-    private void checkForTagInBrowser(String tagName) {
-
-    }
-
-    @Test
-    public void createNewTagTest() {
+    private void createAndSaveNewTagHelper(String tagName) {
         //Fill out fields to create note
-        createTagHelper("Basic", "Default",
+        setUpNote("Basic", "Default",
                 FRONT_TAG_TEST_NICE_STR, BACK_TAG_TEST_NICE_STR);
 
         //Click on the "Tags:" bar
@@ -225,12 +228,12 @@ public class NoteTagsTest {
         //Enter tag name into Add tag EditText
         onView(allOf(withClassName(endsWith("EditText")),
                 withHint(R.string.tag_name)))
-                .perform(replaceText(TAG_NAME), closeSoftKeyboard())
-                .check(matches(withText(TAG_NAME)));
+                .perform(replaceText(tagName), closeSoftKeyboard())
+                .check(matches(withText(tagName)));
 
         //Create string to match with coming snackbar message
         String snackbarStr = activityRes.getString(
-                R.string.tag_editor_add_feedback, TAG_NAME,
+                R.string.tag_editor_add_feedback, tagName,
                 activityRes.getString(R.string.dialog_ok));
 
         //Click the OK button
@@ -262,15 +265,67 @@ public class NoteTagsTest {
                 withContentDescription(R.string.filter_tags)))
                 .perform(click());
 
-        //Search for TAG_NAME
+        //Search for tagName
         onView(allOf(withId(R.id.tags_dialog_action_filter),
                 withClassName(endsWith("SearchView"))))
-                .perform(replaceTextAndSubmitSearchView(TAG_NAME));
+                .perform(replaceTextAndSubmitSearchView(tagName));
 
-        //Check new tag named TAG_NAME is there
+        //Check new tag named tagName is there
         onView(allOf(withId(R.id.tags_dialog_tag_item),
-                withText(TAG_NAME)))
+                withText(tagName)))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void createAndSaveNewSimpleTagTest() {
+        createAndSaveNewTagHelper(TAG_NAME);
+    }
+
+    @Test
+    public void createAndSaveNewGibberishTagTest() {
+        createAndSaveNewTagHelper(TAG_NAME_GIBBERISH);
+    }
+
+    @Test
+    public void createAndSaveNewLongTagTest() {
+        createAndSaveNewTagHelper(TAG_NAME_LONG);
+    }
+
+    @Test
+    public void emptyStringTagTest() {
+        //Fill out fields to create note
+        setUpNote("Basic", "Default",
+                FRONT_TAG_TEST_NICE_STR, BACK_TAG_TEST_NICE_STR);
+
+        //Click on the "Tags:" bar
+        onView(allOf(withId(R.id.CardEditorTagButton),
+                hasDescendant(withId(R.id.CardEditorTagText))))
+                .perform(scrollTo(), click());
+
+        //Ensure Tag dialog shows properly
+        tagDialogDidShowHelper();
+
+        //Click on the add button
+        onView(withId(R.id.tags_dialog_action_add)).perform(click());
+
+        //Check "Add tag" (R.string.add_tag) dialog appears
+        addTagDialogDidShowHelper();
+
+        //Enter tag name into Add tag EditText
+        onView(allOf(withClassName(endsWith("EditText")),
+                withHint(R.string.tag_name)))
+                .perform(replaceText(" "), closeSoftKeyboard())
+                .check(matches(withText("")));
+
+        //Click the OK button
+        onView(allOf(withClassName(endsWith("MDButton")),
+                withId(R.id.md_buttonDefaultPositive),
+                withText(R.string.dialog_ok)))
+                .perform(click());
+
+        //Check for no snackbar message since blank text is ignored
+        onView(withId(R.id.snackbar_text))
+                .check(doesNotExist());
     }
 
     public static ViewAction replaceTextAndSubmitSearchView(String text) {
@@ -292,4 +347,5 @@ public class NoteTagsTest {
             }
         };
     }
+
 }
