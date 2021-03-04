@@ -8,8 +8,6 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.LargeTest;
 
 import com.ichi2.anki.DeckPicker;
 import com.ichi2.anki.R;
@@ -18,7 +16,6 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.Random;
 
@@ -28,7 +25,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -46,32 +42,32 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 
-@RunWith(AndroidJUnit4.class)
-@LargeTest
-
-public class NoteTagAddTest {
+public class CardBrowerserTagSearchTest {
 
     @Rule
-    public ActivityScenarioRule<DeckPicker> deckPickerActivityForTagScenarioRule
+    public ActivityScenarioRule<DeckPicker> scenarioRule
             = new ActivityScenarioRule<>(DeckPicker.class);
 
     private Resources activityRes;
 
-    private final String FRONT_TAG_TEST_NICE_STR = "NoteTagAddTest front";
-    private final String BACK_TAG_TEST_NICE_STR = "NoteTagAddTest back";
+    private final String FRONT_TAG_TEST_NICE_STR = "CardBrowserTagSearch front";
+    private final String BACK_TAG_TEST_NICE_STR = "CardBrowserTagSearch back";
 
-    private String TAG_NAME = "" + (new Random().nextInt(10000000));
-    private String TAG_NAME_GIBBERISH = "q!°9#Ò!.∆—u‰Å⁄¶ı“—g`";
-    private String TAG_NAME_LONG = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" +
-            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" +
-            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" +
-            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" +
-            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" +
-            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+    private final String SEARCH_TAG_NAME = "CardBrowserTagSearchTest" +
+            (new Random().nextInt(10000000));
+    private final String SEARCH_TAG_NAME_GIBBERISH = "CardBrowserTagSearchTest" +
+            "+„87ba£§!§©π≤ch]ˇht]";
+    private final String SEARCH_TAG_NAME_LONG = "CardBrowserTagSearchTest" + "defghijklmnopqrstuvw"
+            + "1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzyABCDEFGHIJKLMNOPQRSTUVWXYZÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
+            "ÏwÅˆ0Ç˚=»˜˘F-`J?åzyabcdefghijklmnopqrstuvwxyz1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
+            "1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzyABCDEFGHIJKLMNOPQRSTUVWXYZÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
+            "ÏwÅˆ0Ç˚=»˜˘F-`J?åzyabcdefghijklmnopqrstuvwxyz1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
+            "1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzyABCDEFGHIJKLMNOPQRSTUVWXYZÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
+            "ÏwÅˆ0Ç˚=»˜˘F-`J?åzyabcdefghijklmnopqrstuvwxyz1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzy";
 
     @Before
     public void setUp() {
-        deckPickerActivityForTagScenarioRule.getScenario()
+        scenarioRule.getScenario()
                 .onActivity(new ActivityScenario.ActivityAction<DeckPicker>() {
 
                     @Override
@@ -79,55 +75,31 @@ public class NoteTagAddTest {
                         activityRes = activity.getResources();
                     }
                 });
+    }
 
+    private void navigateToNoteEditor() {
         onView(withId(R.id.fab_expand_menu_button)).perform(click());
         onView(withId(R.id.add_note_action)).perform(click());
 
         onView(isRoot()).perform(closeSoftKeyboard());
     }
 
-    private void tagDialogDidShowHelper(){
-        //Check Tag dialog toolbar shows
-        onView(withId(R.id.tags_dialog_toolbar)).check(matches(isDisplayed()));
+    private void navigateToCardBrowswer() {
+        //Open the navigation drawer
+        onView(allOf(withClassName(endsWith("AppCompatImageButton")),
+                withContentDescription("Navigate up"),
+                isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
+                        withId(R.id.toolbar)))))
+                .perform(click());
 
-        //Check Tag dialog TextView "Tags" shows
-        onView(allOf(withClassName(endsWith("TextView")),
-                withText(R.string.card_details_tags)))
-                .check(matches(isDisplayed()));
-
-        //Check Tag dialog Search item shows
-        onView(withId(R.id.tags_dialog_action_filter)).check(matches(isDisplayed()));
-
-        //Check Tag dialog Add item shows
-        onView(withId(R.id.tags_dialog_action_add)).check(matches(isDisplayed()));
-
-        //Check Tag dialog Select All item shows
-        onView(withId(R.id.tags_dialog_action_select_all)).check(matches(isDisplayed()));
-
-        //Check Cancel button shows
-        onView(allOf(withId(R.id.md_buttonDefaultNegative),
-                withText(R.string.dialog_cancel)))
-                .check(matches(isDisplayed()));
-
-        //Check OK button shows
-        onView(allOf(withId(R.id.md_buttonDefaultPositive),
-                withText(R.string.dialog_ok)))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void tagsDialogClickTest() {
-        //Click on Tags to open dialog
-        onView(allOf(withId(R.id.CardEditorTagButton),
-                hasDescendant(withId(R.id.CardEditorTagText))))
-                .perform(scrollTo(), click());
-
-        tagDialogDidShowHelper();
+        //Click on the Card Browser item
+        onView(withId(R.id.nav_browser))
+                .perform(click());
     }
 
     /*
      * Helper method to set up the necessary "Add note" fields since Tags need to be
-     * created along with a note, or else it's not created.
+     * created along with a note, or else it's not saved.
      */
     private void setUpNote(String noteTypeStr, String noteDeckStr,
                            String noteFrontStr, String noteBackStr) {
@@ -140,7 +112,7 @@ public class NoteTagAddTest {
                 .perform(scrollTo())
                 .check(matches(withText(containsString(noteTypeStr))));
 
-        //Set Deck to noteDeckStr and verify
+        //Set Deck Spinner to noteDeckStr and verify
         onView(withId(R.id.note_deck_spinner)).perform(scrollTo(), click());
         onData(allOf(is(instanceOf(String.class)), is(noteDeckStr)))
                 .perform(click());
@@ -166,45 +138,10 @@ public class NoteTagAddTest {
                 .check(matches(withText(noteBackStr)));
     }
 
-    private void addTagDialogDidShowHelper() {
-        //Check for Material dialog title with text R.string.add_tag
-        onView(allOf(withClassName(endsWith("TextView")),
-                withText(R.string.add_tag),
-                withId(R.id.md_title)))
-                .check(matches(isDisplayed()));
-
-        //Check for EditText
-        onView(allOf(withClassName(endsWith("EditText")),
-                withHint(R.string.tag_name)))
-                .check(matches(isDisplayed()));
-
-        //Check for Cancel button
-        onView(allOf(withClassName(endsWith("MDButton")),
-                withId(R.id.md_buttonDefaultNegative),
-                withText(R.string.dialog_cancel)))
-                .check(matches(isDisplayed()));
-
-        //Check for OK button
-        onView(allOf(withClassName(endsWith("MDButton")),
-                withId(R.id.md_buttonDefaultPositive),
-                withText(R.string.dialog_ok)))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void addTagDialogDidShowTest() {
-        //Click on the "Tags:" bar
-        onView(allOf(withId(R.id.CardEditorTagButton),
-                hasDescendant(withId(R.id.CardEditorTagText))))
-                .perform(scrollTo(), click());
-
-        //Click on the add button
-        onView(withId(R.id.tags_dialog_action_add)).perform(click());
-
-        //Check the dialog loads its views
-        addTagDialogDidShowHelper();
-    }
-
+    /*
+     * Helper method to set the spinners and fill Front and Back edit
+     * fields, then create the tag, and save the note to save the tag.
+     */
     private void createAndSaveNewTagHelper(String tagName) {
         //Fill out fields to create note
         setUpNote("Basic", "Default",
@@ -215,16 +152,10 @@ public class NoteTagAddTest {
                 hasDescendant(withId(R.id.CardEditorTagText))))
                 .perform(scrollTo(), click());
 
-        //Ensure Tag dialog shows properly
-        tagDialogDidShowHelper();
-
         //Click on the add button
         onView(withId(R.id.tags_dialog_action_add)).perform(click());
 
-        //Check "Add tag" (R.string.add_tag) dialog appears
-        addTagDialogDidShowHelper();
-
-        //Enter tag name into Add tag EditText
+        //Enter tagName into Add tag EditText
         onView(allOf(withClassName(endsWith("EditText")),
                 withHint(R.string.tag_name)))
                 .perform(replaceText(tagName), closeSoftKeyboard())
@@ -253,78 +184,77 @@ public class NoteTagAddTest {
 
         //Save (create) the note to save tag
         onView(withId(R.id.action_save)).perform(click());
+    }
 
-        //Check tag is saved by clicking Tags: bar again and searching
-        onView(allOf(withId(R.id.CardEditorTagButton),
-                hasDescendant(withId(R.id.CardEditorTagText))))
-                .perform(scrollTo(), click());
+    /*
+     * Helper method to navigate from NoteEditor to DeckPicker to Cardbrowser
+     * to the filter by tag dialog, and search for the newly created tag.
+     */
+    private void goToCardBrowserAndSearchForTag(String tagName) {
+        //Navigate back up to DeckPicker from NoteEditor
+        onView(allOf(withClassName(endsWith("AppCompatImageButton")),
+                withContentDescription("Navigate up"),
+                isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
+                        withId(R.id.toolbar)))))
+                .perform(click());
 
-        //Click search icon
-        onView(allOf(withId(R.id.tags_dialog_action_filter),
+        navigateToCardBrowswer();
+
+        //Open overflow menu
+        onView(allOf(withClassName(endsWith("OverflowMenuButton")),
+                isDescendantOfA(withClassName(endsWith("ActionMenuView"))),
+                isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
+                        withId(R.id.toolbar)))))
+                .perform(click());
+
+        //Click on "Filter by tag" (R.string.card_browser_search_by_tag)
+        onView(allOf(withId(R.id.title),
+                withClassName(endsWith("AppCompatTextView")),
+                withText(R.string.card_browser_search_by_tag)))
+                .perform(click());
+
+        //Click on search icon
+        onView(allOf(withClassName(endsWith("ActionMenuItemView")),
+                withId(R.id.tags_dialog_action_filter),
                 withContentDescription(R.string.filter_tags)))
                 .perform(click());
 
-        //Search for tagName
-        onView(allOf(withId(R.id.tags_dialog_action_filter),
-                withClassName(endsWith("SearchView"))))
+        //Search for the tag
+        onView(allOf(withClassName(endsWith("SearchView")),
+                withId(R.id.tags_dialog_action_filter)))
                 .perform(replaceTextAndSubmitSearchView(tagName));
 
-        //Check new tag named tagName is there
-        onView(allOf(withId(R.id.tags_dialog_tag_item),
-                withText(tagName)))
-                .check(matches(isDisplayed()));
+        //Check if tag is there
+        onView(allOf(withClassName(endsWith("CheckedTextView")),
+                withId(R.id.tags_dialog_tag_item),
+                withText(tagName)));
     }
 
     @Test
-    public void createAndSaveNewSimpleTagTest() {
-        createAndSaveNewTagHelper(TAG_NAME);
+    public void cardBrowserTagSearchNormalTest() {
+        navigateToNoteEditor();
+
+        createAndSaveNewTagHelper(SEARCH_TAG_NAME);
+
+        goToCardBrowserAndSearchForTag(SEARCH_TAG_NAME);
     }
 
     @Test
-    public void createAndSaveNewGibberishTagTest() {
-        createAndSaveNewTagHelper(TAG_NAME_GIBBERISH);
+    public void cardBrowserTagSearchGibberishTest() {
+        navigateToNoteEditor();
+
+        createAndSaveNewTagHelper(SEARCH_TAG_NAME_GIBBERISH);
+
+        goToCardBrowserAndSearchForTag(SEARCH_TAG_NAME_GIBBERISH);
     }
 
     @Test
-    public void createAndSaveNewLongTagTest() {
-        createAndSaveNewTagHelper(TAG_NAME_LONG);
-    }
+    public void cardBrowserTagSearchLongTest() {
+        navigateToNoteEditor();
 
-    @Test
-    public void emptyStringTagTest() {
-        //Fill out fields to create note
-        setUpNote("Basic", "Default",
-                FRONT_TAG_TEST_NICE_STR, BACK_TAG_TEST_NICE_STR);
+        createAndSaveNewTagHelper(SEARCH_TAG_NAME_LONG);
 
-        //Click on the "Tags:" bar
-        onView(allOf(withId(R.id.CardEditorTagButton),
-                hasDescendant(withId(R.id.CardEditorTagText))))
-                .perform(scrollTo(), click());
-
-        //Ensure Tag dialog shows properly
-        tagDialogDidShowHelper();
-
-        //Click on the add button
-        onView(withId(R.id.tags_dialog_action_add)).perform(click());
-
-        //Check "Add tag" (R.string.add_tag) dialog appears
-        addTagDialogDidShowHelper();
-
-        //Enter tag name into Add tag EditText
-        onView(allOf(withClassName(endsWith("EditText")),
-                withHint(R.string.tag_name)))
-                .perform(replaceText(" "), closeSoftKeyboard())
-                .check(matches(withText("")));
-
-        //Click the OK button
-        onView(allOf(withClassName(endsWith("MDButton")),
-                withId(R.id.md_buttonDefaultPositive),
-                withText(R.string.dialog_ok)))
-                .perform(click());
-
-        //Check for no snackbar message since blank text is ignored
-        onView(withId(R.id.snackbar_text))
-                .check(doesNotExist());
+        goToCardBrowserAndSearchForTag(SEARCH_TAG_NAME_LONG);
     }
 
     public static ViewAction replaceTextAndSubmitSearchView(String text) {
@@ -346,5 +276,4 @@ public class NoteTagAddTest {
             }
         };
     }
-
 }
