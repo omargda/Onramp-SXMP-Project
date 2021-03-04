@@ -16,16 +16,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Random;
+
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.not;
@@ -40,7 +44,12 @@ public class DeckCreatorTest {
             = new ActivityScenarioRule<>(DeckPicker.class);
 
     private View decorView;
-    private final String DECKNAME = "Auto Test";
+    private final String DECKNAME = "DeckAddTest " + (new Random().nextInt(10000000));
+    private final String DECKNAME_GIBBERISH = "DeckAddTest l≈Ω≤;†:ªÁVpeIk≠-≥ˆ>v";
+    private final String DECKNAME_LONG = "DeckAddTest name which is really really really really" +
+            "really really really really really really really really really really really really" +
+            "really really really really really really really really really really really really" +
+            "really really really really really really really really really really really long";
     private final String GIBBERISH = "oiejoiwej09ioj";
 
     @Before
@@ -50,28 +59,27 @@ public class DeckCreatorTest {
             @Override
             public void perform(DeckPicker activity) {
                 decorView = activity.getWindow().getDecorView();
-
             }
         });
     }
 
-    private void openCreateDeckDialog() {
+    private void openCreateDeck() {
         //Click the FAB on bottom right, then click the "Create deck" button fab_expand_menu_button
         onView(withId(R.id.fab_expand_menu_button)).perform(click());
         onView(withId(R.id.add_deck_action)).perform(click());
+    }
+
+    @Test
+    public void checkCreateDeckDialogTest() {
+        openCreateDeck();
 
         //Check if dialog appears — dialog is an MDRootLayout with res-name=md_root
         onView(withId(R.id.md_root)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void checkDialogTest() {
-        openCreateDeckDialog();
-    }
-
-    @Test
     public void dialogCancelDismissTest() {
-        openCreateDeckDialog();
+        openCreateDeck();
 
         //Click the "CANCEL" button on dialog
         onView(allOf(withId(R.id.md_buttonDefaultNegative),
@@ -84,30 +92,31 @@ public class DeckCreatorTest {
 
     @Test
     public void dialogDismissedInvalidDeckTest() {
-        openCreateDeckDialog();
+        openCreateDeck();
 
         //Click the "OK" button on dialog
         onView(allOf(withId(R.id.md_buttonDefaultPositive),
                 isDescendantOfA(withId(R.id.md_root))))
                 .perform(click());
 
-        //Check if dialog is no longer displayed
-        onView(withId(R.id.md_root)).check(doesNotExist());
-
         //Check for Toast with R.string.invalid_deck_name message
         onView(withText(R.string.invalid_deck_name))
                 .inRoot(RootMatchers.withDecorView(not(decorView)))
                 .check(matches(isDisplayed()));
+
+        //Check if dialog is no longer displayed
+        onView(withId(R.id.md_root)).check(doesNotExist());
     }
 
     @Test
     public void dialogCancelWithTextTest() {
-        openCreateDeckDialog();
+        openCreateDeck();
 
         //Type into the dialog's EditText
         onView(allOf(withClassName(endsWith("EditText")),
                 isDescendantOfA(withId(R.id.md_customViewFrame))))
-                .perform(typeText(GIBBERISH));
+                .perform(typeText(GIBBERISH), closeSoftKeyboard())
+                .check(matches(withText(GIBBERISH)));
 
         //Click the "CANCEL" button on dialog
         onView(allOf(withId(R.id.md_buttonDefaultNegative),
@@ -118,17 +127,44 @@ public class DeckCreatorTest {
         onView(withId(R.id.md_root)).check(doesNotExist());
     }
 
-    @Test
-    public void createDeckTest() {
-        openCreateDeckDialog();
+    public void createDeck(String deckName) {
+        openCreateDeck();
 
         //Type into the dialog's EditText
         onView(allOf(withClassName(endsWith("EditText")),
                 isDescendantOfA(withId(R.id.md_customViewFrame))))
-                .perform(typeText(DECKNAME))
-                .check(matches(withText(DECKNAME)));
+                .perform(replaceText(deckName), closeSoftKeyboard())
+                .check(matches(withText(deckName)));
 
         //Save the new deck
         onView(withText(R.string.dialog_ok)).perform(click());
+    }
+
+    @Test
+    public void createDeckTest() {
+        createDeck(DECKNAME);
+    }
+
+    @Test
+    public void createDeckGibberishTest() {
+        createDeck(DECKNAME_GIBBERISH);
+    }
+
+    @Test
+    public void createDeckLongTest() {
+        createDeck(DECKNAME_LONG);
+    }
+
+    @Test
+    public void createEmptyDeckTest() {
+        createDeck("         ");
+
+        //Check for Toast with R.string.invalid_deck_name message
+        onView(withText(R.string.invalid_deck_name))
+                .inRoot(RootMatchers.withDecorView(not(decorView)))
+                .check(matches(isDisplayed()));
+
+        //Check if dialog is no longer displayed
+        onView(withId(R.id.md_root)).check(doesNotExist());
     }
 }
