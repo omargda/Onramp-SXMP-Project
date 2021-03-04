@@ -79,8 +79,6 @@ public class NoteTagAddTest {
                     }
                 });
 
-        //TAG_NAME = "" + (new Random().nextInt(10000000));
-
         onView(withId(R.id.fab_expand_menu_button)).perform(click());
         onView(withId(R.id.add_note_action)).perform(click());
 
