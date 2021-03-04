@@ -44,9 +44,9 @@ public class DeckCreatorTest {
             = new ActivityScenarioRule<>(DeckPicker.class);
 
     private View decorView;
-    private final String DECKNAME = "DeckAddTest " + (new Random().nextInt(10000000));
-    private final String DECKNAME_GIBBERISH = "DeckAddTest l≈Ω≤;†:ªÁVpeIk≠-≥ˆ>v";
-    private final String DECKNAME_LONG = "DeckAddTest name which is really really really really" +
+    private final String DECKNAME = "1 DeckAddTest " + (new Random().nextInt(10000000));
+    private final String DECKNAME_GIBBERISH = "1 DeckAddTest l≈Ω≤;†:ªÁVpeIk≠-≥ˆ>v";
+    private final String DECKNAME_LONG = "1 DeckAddTest name which is really really really really" +
             "really really really really really really really really really really really really" +
             "really really really really really really really really really really really really" +
             "really really really really really really really really really really really long";
@@ -127,7 +127,7 @@ public class DeckCreatorTest {
         onView(withId(R.id.md_root)).check(doesNotExist());
     }
 
-    public void createDeck(String deckName) {
+    public void createDeckAndCheck(String deckName) {
         openCreateDeck();
 
         //Type into the dialog's EditText
@@ -138,26 +138,41 @@ public class DeckCreatorTest {
 
         //Save the new deck
         onView(withText(R.string.dialog_ok)).perform(click());
+
+        //Check for the deck
+        onView(allOf(withId(R.id.deckpicker_name),
+                withClassName(endsWith("FixedTextView")),
+                withText(deckName)))
+                .check(matches(isDisplayed()));
     }
 
     @Test
     public void createDeckTest() {
-        createDeck(DECKNAME);
+        createDeckAndCheck(DECKNAME);
     }
 
     @Test
     public void createDeckGibberishTest() {
-        createDeck(DECKNAME_GIBBERISH);
+        createDeckAndCheck(DECKNAME_GIBBERISH);
     }
 
     @Test
     public void createDeckLongTest() {
-        createDeck(DECKNAME_LONG);
+        createDeckAndCheck(DECKNAME_LONG);
     }
 
     @Test
     public void createEmptyDeckTest() {
-        createDeck("         ");
+        openCreateDeck();
+
+        //Type into the dialog's EditText
+        onView(allOf(withClassName(endsWith("EditText")),
+                isDescendantOfA(withId(R.id.md_customViewFrame))))
+                .perform(replaceText("         "), closeSoftKeyboard())
+                .check(matches(withText("         ")));
+
+        //Save the new deck
+        onView(withText(R.string.dialog_ok)).perform(click());
 
         //Check for Toast with R.string.invalid_deck_name message
         onView(withText(R.string.invalid_deck_name))
