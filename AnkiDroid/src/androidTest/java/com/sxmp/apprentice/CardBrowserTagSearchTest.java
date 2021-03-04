@@ -42,7 +42,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 
-public class CardBrowerserTagSearchTest {
+public class CardBrowserTagSearchTest {
 
     @Rule
     public ActivityScenarioRule<DeckPicker> scenarioRule
