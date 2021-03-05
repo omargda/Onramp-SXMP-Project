@@ -3,6 +3,7 @@ package com.sxmp.apprentice;
 import android.view.View;
 
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -10,7 +11,11 @@ import androidx.test.filters.LargeTest;
 
 import com.ichi2.anki.DeckPicker;
 import com.ichi2.anki.R;
+import com.ichi2.libanki.sched.AbstractDeckTreeNode;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +30,7 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
@@ -140,10 +146,9 @@ public class DeckCreatorTest {
         onView(withText(R.string.dialog_ok)).perform(click());
 
         //Check for the deck
-        onView(allOf(withId(R.id.deckpicker_name),
-                withClassName(endsWith("FixedTextView")),
-                withText(deckName)))
-                .check(matches(isDisplayed()));
+        onView(withId(R.id.files))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(deckName))));
+        onView(withText(deckName)).check(matches(isDisplayed()));
     }
 
     @Test
