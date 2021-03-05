@@ -1,5 +1,6 @@
 package com.sxmp.apprentice;
 
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -20,6 +21,7 @@ import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
@@ -59,6 +61,11 @@ public class DeckRenameTest {
     @Test
     public void renameDeckTest() {
         createDeck(DECKNAME_RENAME);
+
+        //Scroll to deck to bring in view
+        onView(withId(R.id.files))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(DECKNAME_RENAME))));
+        onView(withText(DECKNAME_RENAME)).check(matches(isDisplayed()));
 
         //Long click on new deck to bring up options
         onView(allOf(withClassName(endsWith("FixedTextView")),
