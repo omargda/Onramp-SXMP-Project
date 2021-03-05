@@ -3,10 +3,7 @@ package com.sxmp.apprentice;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.appcompat.widget.SearchView;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -15,11 +12,12 @@ import androidx.test.filters.LargeTest;
 import com.ichi2.anki.DeckPicker;
 import com.ichi2.anki.R;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.Random;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -43,22 +41,28 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 
+
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class CreateNotesTest {
 
     @Rule
-    public ActivityScenarioRule<DeckPicker> activityForNoteEditorScenarioRule
+    public ActivityScenarioRule<DeckPicker> scenarioRule
             = new ActivityScenarioRule<>(DeckPicker.class);
 
     private Resources activityRes;
     private View decorView;
     private DeckPicker theActivity;
+    private final String FRONT_TEST_STR = "CreateNotesTest front " +
+            (new Random().nextInt(10000000));;
+    private final String BACK_TEST_STR = "CreateNotesTest back " +
+            (new Random().nextInt(10000000));;
+
 
     @Before
     public void setupToNoteEditorActivity() {
 
-        activityForNoteEditorScenarioRule.getScenario()
+        scenarioRule.getScenario()
                 .onActivity(new ActivityScenario.ActivityAction<DeckPicker>() {
 
                     @Override
@@ -74,9 +78,6 @@ public class CreateNotesTest {
 
         onView(isRoot()).perform(closeSoftKeyboard());
     }
-
-    private final String FRONTTESTSTR = "Testing with Front String";
-    private final String BACKTESTSTR = "Testing with Back String";
 
     @Test
     public void noteEditorDidLoadTest() {
@@ -98,65 +99,62 @@ public class CreateNotesTest {
         onView(withId(R.id.CardEditorModelText)).perform(scrollTo()).check(matches(isDisplayed()));
         onView(withId(R.id.note_type_spinner)).perform(scrollTo()).check(matches(isDisplayed()));
 
-        //Testing if Spinner changes using "Basic (and reversed card)" as test selection
+        //Click on Type spinner
         onView(withId(R.id.note_type_spinner)).perform(scrollTo(), click());
-        onData(allOf(is(instanceOf(String.class)), is("Basic (and reversed card)")))
+
+        //Convert "Basic (and reversed card) into a String
+        String typeStr = activityRes.getString(R.string.forward_reverse_model_name);
+
+        //Test the spinner changes
+        onData(allOf(is(instanceOf(String.class)), is(typeStr)))
                 .perform(click());
         onView(allOf(withClassName(endsWith("AppCompatTextView")),
                 isDescendantOfA(withId(R.id.note_type_spinner))))
-                .check(matches(withText(containsString("Basic (and reversed card)"))));
+                .check(matches(withText(R.string.forward_reverse_model_name)));
     }
 
-    @Test
-    public void createBasicNoteTest() {
-        //Set the Type Spinner to "Basic" and verify
+    /*
+     * Helper method to set the text for the front and back
+     * as well as set the note type and deck.
+     */
+    private void setupNote(String frontText, String backText,
+                           String noteType, String deckName) {
+        //Set the Type Spinner to noteType and verify
         onView(withId(R.id.note_type_spinner)).perform(scrollTo(), click());
-        onData(allOf(is(instanceOf(String.class)), is("Basic")))
+        onData(allOf(is(instanceOf(String.class)), is(noteType)))
                 .perform(click());
         onView(allOf(withClassName(endsWith("AppCompatTextView")),
                 isDescendantOfA(withId(R.id.note_type_spinner))))
                 .perform(scrollTo())
-                .check(matches(withText(containsString("Basic"))));
+                .check(matches(withText(containsString(noteType))));
 
-        //Set Deck to "Default" and verify
+        //Set Deck to deckName and verify
         onView(withId(R.id.note_deck_spinner)).perform(scrollTo(), click());
-        onData(allOf(is(instanceOf(String.class)), is("Default")))
+        onData(allOf(is(instanceOf(String.class)), is(deckName)))
                 .perform(click());
         onView(allOf(withClassName(endsWith("AppCompatTextView")),
                 isDescendantOfA(withId(R.id.note_deck_spinner))))
                 .perform(scrollTo())
-                .check(matches(withText(containsString("Default"))));
+                .check(matches(withText(containsString(deckName))));
 
         //Enter text for the front of note
         onView(allOf(withClassName(endsWith("EditText")),
-                withContentDescription("Front"),
+                withContentDescription(R.string.front_field_name),
                 isDescendantOfA(withClassName(endsWith("FieldEditLine"))),
                 isDescendantOfA(withId(R.id.constraint_layout))))
-                .perform(scrollTo(), replaceText(FRONTTESTSTR), closeSoftKeyboard())
-                .check(matches(withText(FRONTTESTSTR)));
+                .perform(scrollTo(), replaceText(frontText), closeSoftKeyboard())
+                .check(matches(withText(frontText)));
 
         //Enter text for the back of note
         onView(allOf(withClassName(endsWith("EditText")),
-                withContentDescription("Back"),
+                withContentDescription(R.string.back_field_name),
                 isDescendantOfA(withClassName(endsWith("FieldEditLine"))),
                 isDescendantOfA(withId(R.id.constraint_layout))))
-                .perform(scrollTo(), replaceText(BACKTESTSTR), closeSoftKeyboard())
-                .check(matches(withText(BACKTESTSTR)));
+                .perform(scrollTo(), replaceText(backText), closeSoftKeyboard())
+                .check(matches(withText(backText)));
+    }
 
-        //Get the string for the Toast message that will appear from plurals
-        String cardsAddedTextString = activityRes.
-                getQuantityString(R.plurals.factadder_cards_added, 1);
-        //Remove the number so we can match text
-        String toastTextNumberRemoved =  cardsAddedTextString.split(" ", 2)[1];
-
-        //Save (Create) the note
-        onView(withId(R.id.action_save)).perform(click());
-
-        //Check for Toast message
-        onView(withText(containsString(toastTextNumberRemoved)))
-                .inRoot(RootMatchers.withDecorView(not(decorView)))
-                .check(matches(isDisplayed()));
-
+    private void checkNoteEditorCleared() {
         //Check the Front EditText field is empty
         onView(allOf(withClassName(endsWith("EditText")),
                 withContentDescription("Front"),
@@ -172,83 +170,27 @@ public class CreateNotesTest {
                 isDescendantOfA(withId(R.id.constraint_layout))))
                 .perform(scrollTo())
                 .check(matches(withText("")));
-
-        //Navigate Back Up
-        onView(allOf(withClassName(endsWith("AppCompatImageButton")),
-                withContentDescription("Navigate up"),
-                isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
-                        withId(R.id.toolbar)))))
-                .perform(click());
-
-        //Open the navigation drawer
-        onView(allOf(withClassName(endsWith("AppCompatImageButton")),
-                withContentDescription("Navigate up"),
-                isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
-                        withId(R.id.toolbar)))))
-                .perform(click());
-
-        //Click on the Card Browser item
-        onView(withId(R.id.nav_browser))
-                .perform(click());
-
-        //Click the toolbar spinner to open
-        onView(allOf(withClassName(endsWith("AppCompatSpinner")),
-                withId(R.id.toolbar_spinner),
-                isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
-                        withId(R.id.toolbar)))))
-                .perform(click());
-
-        //Select the "All decks" deck to test finding new note
-        onView(withText("All decks"))
-                .perform(click());
-
-        //Verify toolbar spinner says "All decks"
-        onView(allOf(withId(R.id.dropdown_deck_name),
-                withClassName(endsWith("FixedTextView")),
-                isDescendantOfA(allOf(withClassName(endsWith("Toolbar")),
-                        withId(R.id.toolbar)))))
-                .check(matches(withText(containsString("All decks"))));
-
-        //Select Search item
-        onView(allOf(withId(R.id.action_search),
-                withClassName(endsWith("ActionMenuItemView")),
-                withContentDescription("Search")))
-                .perform(click());
-
-        //Search for note according to the Front and Back texts
-        onView(allOf(withId(R.id.action_search),
-                withClassName(endsWith("SearchView"))))
-                .perform(replaceTextAndSubmitSearchView(FRONTTESTSTR + " " + BACKTESTSTR));
-
-        //Clear the SearchView text
-        onView(allOf(withId(R.id.search_close_btn),
-                withContentDescription("Clear query"),
-                withClassName(endsWith("AppCompatImageView")),
-                isDescendantOfA(withId(R.id.search_plate))))
-                .perform(click(), closeSoftKeyboard());
-
-        //Check if the new note
-        onView(withText(FRONTTESTSTR)).check(matches(isDisplayed()));
     }
 
-    public static ViewAction replaceTextAndSubmitSearchView(String text) {
-        return new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return withClassName(endsWith("SearchView"));
-            }
+    @Test
+    public void createBasicNoteTest() {
+        setupNote(FRONT_TEST_STR, BACK_TEST_STR,
+                "Basic", "Default");
 
-            @Override
-            public String getDescription() {
-                return "replaceTextSearchView ViewAction";
-            }
+        //Get the string for the Toast message that will appear from plurals
+        String cardsAddedTextString = activityRes.
+                getQuantityString(R.plurals.factadder_cards_added, 1);
+        //Remove the number so we can match text
+        String toastTextNumberRemoved =  cardsAddedTextString.split(" ", 2)[1];
 
-            @Override
-            public void perform(UiController uiController, View view) {
-                SearchView searchView = (SearchView) view;
-                searchView.setQuery(text, true);
-            }
-        };
+        //Save (Create) the note
+        onView(withId(R.id.action_save)).perform(click());
+
+        //Check for Toast message
+        onView(withText(containsString(toastTextNumberRemoved)))
+                .inRoot(RootMatchers.withDecorView(not(decorView)))
+                .check(matches(isDisplayed()));
+
+        checkNoteEditorCleared();
     }
-
 }
