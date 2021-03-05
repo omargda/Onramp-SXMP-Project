@@ -50,20 +50,23 @@ public class CardBrowserTagSearchTest {
 
     private Resources activityRes;
 
-    private final String FRONT_TAG_TEST_NICE_STR = "CardBrowserTagSearch front";
-    private final String BACK_TAG_TEST_NICE_STR = "CardBrowserTagSearch back";
+    private final String FRONT_TAG_TEST_NICE_STR = "CardBrowserTagSearch front" +
+            (new Random().nextInt(10000000));
+    private final String BACK_TAG_TEST_NICE_STR = "CardBrowserTagSearch back" +
+            (new Random().nextInt(10000000));
 
     private final String SEARCH_TAG_NAME = "CardBrowserTagSearchTest" +
             (new Random().nextInt(10000000));
     private final String SEARCH_TAG_NAME_GIBBERISH = "CardBrowserTagSearchTest" +
-            "+„87ba£§!§©π≤ch]ˇht]";
+            "+„87ba£§!§©π≤ch]ˇht]" + (new Random().nextInt(10000000));;
     private final String SEARCH_TAG_NAME_LONG = "CardBrowserTagSearchTest" + "defghijklmnopqrstuvw"
             + "1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzyABCDEFGHIJKLMNOPQRSTUVWXYZÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
             "ÏwÅˆ0Ç˚=»˜˘F-`J?åzyabcdefghijklmnopqrstuvwxyz1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
             "1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzyABCDEFGHIJKLMNOPQRSTUVWXYZÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
             "ÏwÅˆ0Ç˚=»˜˘F-`J?åzyabcdefghijklmnopqrstuvwxyz1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
             "1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzyABCDEFGHIJKLMNOPQRSTUVWXYZÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
-            "ÏwÅˆ0Ç˚=»˜˘F-`J?åzyabcdefghijklmnopqrstuvwxyz1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzy";
+            "ÏwÅˆ0Ç˚=»˜˘F-`J?åzyabcdefghijklmnopqrstuvwxyz1234567890ÏwÅˆ0Ç˚=»˜˘F-`J?åzy" +
+            (new Random().nextInt(10000000));;
 
     @Before
     public void setUp() {
