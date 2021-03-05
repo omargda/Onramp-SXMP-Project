@@ -1,5 +1,6 @@
 package com.sxmp.apprentice;
 
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -21,12 +22,14 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.endsWith;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -38,7 +41,7 @@ public class DeleteDeckTest {
 
     private final String DECKNAME_DELETE = "1 DeleteDeckTest Delete " +
             (new Random().nextInt(10000000));
-    private final String DECKNAME_STAY = "1 DeleteDeckTest Don't Delete";
+    private final String DECKNAME_STAY = "1 DeleteDeckTest Stay";
 
     private void createDeck(String deckName) {
         //Click the FAB on bottom right, then click the "Create deck" button fab_expand_menu_button
@@ -54,12 +57,18 @@ public class DeleteDeckTest {
         //Save the new deck
         onView(withText(R.string.dialog_ok)).perform(click());
     }
+
     @Test
     public void deleteDeckTest() {
         createDeck(DECKNAME_DELETE);
         createDeck(DECKNAME_STAY);
 
-        //Long click on new deck to bring up options
+        //Scroll to DECKNAME_DELETE to bring in view
+        onView(withId(R.id.files))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(DECKNAME_DELETE))));
+        onView(withText(DECKNAME_DELETE)).check(matches(isDisplayed()));
+
+        //Long click on new deck, DECKNAME_DELETE, to bring up options
         onView(allOf(withClassName(endsWith("FixedTextView")),
                 withId(R.id.deckpicker_name),
                 withText(DECKNAME_DELETE)))
@@ -71,16 +80,10 @@ public class DeleteDeckTest {
                 withText(R.string.contextmenu_deckpicker_delete_deck)))
                 .perform(click());
 
-        //Check deck with DECKNAME_DELETE is gone
+        //Check deck is gone
         onView(allOf(withClassName(endsWith("FixedTextView")),
                 withId(R.id.deckpicker_name),
                 withText(DECKNAME_DELETE)))
                 .check(doesNotExist());
-
-        //Check deck with DECKNAME_STAY is still there
-        onView(allOf(withClassName(endsWith("FixedTextView")),
-                withId(R.id.deckpicker_name),
-                withText(DECKNAME_STAY)))
-                .check(matches(isDisplayed()));
     }
 }
