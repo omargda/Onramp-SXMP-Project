@@ -1,160 +1,344 @@
-# Onramp Android Take Home Project 
+﻿# Project Submission
 
-## Overview 🤖
+## DeckCreatorTest
 
-Congratulations for making it this far in the interview process for the SiriusXM + Pandora QE Apprenticeship at Onramp! This project seeks to better inform the Onramp team of your experience with testing Android apps. This is also designed to prepare you for your interview at SiriusXM + Pandora.
+ - Technology Utilization
+	 - I utilized the @RunWith(AndroidJunit4.class) and @LargeTest to use the test class
+	 - Within the class, I used @Rule to create the ActivityScenarioRule so it could launch and close the activity.
+	 - Used the @Before annotation to retrieve the activity's DecorView for later use.
+	 - Used the @Test annotation to create my testing methods.
 
-You will have seven days to complete this project. We expect those who have a moderate level of Android development experience to spend between 30 and 40 hours to implement, document, and submit the project to us. Depending on your level, it may take more or less time, so please plan accordingly.
+ - I thought it was important to test this feature since it is one of the central ones for a flash card app such as this one. A note can automatically go to the "Default" deck, but it's more useful (and most likely to be used) by the user to create decks of certain subjects.
+ - Corner cases
+	 - I tested for the creation of a reasonably named deck, a deck with strange characters, a deck with a long name, a deck with no name, and cancellation of a deck creation.
+ - I got stuck trying to figure out how to check for a Toast message. However, I found it was located elsewhere in the hierarchy. I was also stuck when trying to find the newly created decks to verify the creation. Luckily, for RecyclerViews, there is an action (scrollTo) which was helpful in scrolling to a deck by name and then verifying it was in view.
+ - ViewMatchers used
+ 	 - withID
+ 	 - hasDescendantOfA
+ 	 - isDisplayed
+ 	 - withClassName
+ 	 - withText
 
-**The project is due on Friday, March 5 at 9:00am PT/ 12:00pm ET**
+ - ViewActions used
+ 	 - click
+ 	 - closeSoftKeyboard
+ 	 - replaceText
+ 	 - typeText
 
-#### Project Summary:
-*   Total time available to complete: 7 days
-*   Due date/time: Friday, March 5 at 9:00am PT/ 12:00pm ET
-*   Expected development time to complete: 30 - 40 hours 
-*   Required stack/tools: a computer with Android Studio
+ - ViewAssertions used
+ 	 - doesNotExist
+ 	 - matches
+ - Tested Views
+ 	 - FloatingActionButton to create a deck.
+ 	 - MDRootLayout for a dialog
+ 	 - MaterialDialogButton for selecting Cancel and OK
+ 	 - RecyclerView since this is where the decks are listed.
+ 	 - Toast when verifying an invalid deck.
+ 	 - EditText to enter deck name.
 
-## Description and Details 🔎 
+## DeleteDeckTest
 
-#### Android App Requirements
-For this project, we want you to create UI tests using Espresso for [AnkiDroid](https://github.com/ankidroid/Anki-Android), a spaced repetition flaschard app.
+ - Technology Utilization
+	 - I utilized the @RunWith(AndroidJunit4.class) and @LargeTest to use the test class
+	 - Within the class, I used @Rule to create the ActivityScenarioRule so it could launch and close the activity. 
+	 - Used the @Test annotation to create my testing methods.
+ - I thought it was important to test this feature since it goes together with creating a deck, thus completing the deck's cycle. A user would most likely find deleting decks useful.
+ - Corner cases
+	 - I tested to make sure the wrong deck wasn't removed.
+  -  I was stuck when trying to find the deck to delete once the list was out of view. Luckily, for RecyclerViews, there is an action (scrollTo) which was helpful in scrolling to a deck by name and then verifying it was in view.
+ - ViewMatchers used
+ 	 - isDescendentOfA
+ 	 - withClassName
+ 	 - withId
+ 	 - withText
+ 	 - hasDescendant
+ 	 - isDisplayed
+ - ViewActions used
+ 	 - click
+ 	 - closeSoftKeyboard
+ 	 - longClick
+ 	 - replaceText
+ - ViewAssertions used
+ 	 - doesNotExist
+ 	 - matches
 
-<p align="center">
-<img src="docs/graphics/logos/banner_readme.png"/>
-</p>
+ - Tested Views
+ 	 - FloatingActionButton to create deck.
+ 	 - EditText to create the decks to delete and stay.
+ 	 - RecyclerView to scroll to the deck to be deleted.
+ 	 - FixedTextView to check if displayed and click open deck options dialog.
+ 	 - AppCompatTextView to click on the "Delete Deck" option.
 
-<a href="https://github.com/ankidroid/Anki-Android/releases"><img src="https://img.shields.io/github/v/release/ankidroid/Anki-Android" alt="release"/></a>
-<a href="https://travis-ci.org/github/ankidroid/Anki-Android"><img src="https://img.shields.io/travis/ankidroid/Anki-Android" alt="build"/></a>
-<a href="https://opencollective.com/ankidroid"><img src="https://img.shields.io/opencollective/all/ankidroid" alt="Open Collective backers and sponsors"/></a>
-<a href="https://github.com/ankidroid/Anki-Android/issues"><img src="https://img.shields.io/github/commit-activity/m/ankidroid/Anki-Android" alt="commit-activity"/></a>
-<a href="https://github.com/ankidroid/Anki-Android/network/members"><img src="https://img.shields.io/github/forks/ankidroid/Anki-Android" alt="forks"/></a>
-<a href="https://github.com/ankidroid/Anki-Android/stargazers"><img src="https://img.shields.io/github/stars/ankidroid/Anki-Android" alt="stars"/></a>
-<a href="https://crowdin.com/project/ankidroid"><img src="https://badges.crowdin.net/ankidroid/localized.svg"></img></a>
-<a href="https://github.com/ankidroid/Anki-Android/graphs/contributors"><img src="https://img.shields.io/github/contributors/ankidroid/Anki-Android" alt="contributors"/></a>
-<a href="https://discord.gg/qjzcRTx"><img src="https://img.shields.io/discord/368267295601983490"></img></a>
-<a href="https://github.com/ankidroid/Anki-Android/blob/master/COPYING"><img src="https://img.shields.io/github/license/ankidroid/Anki-Android" alt="license"/></a>
-</p>
+## CreateNoteTest
 
-# [AnkiDroid](https://github.com/ankidroid/Anki-Android)
+ - Technology Utilization
+	 - I utilized the @RunWith(AndroidJunit4.class) and @LargeTest to use the test class
+	 - Within the class, I used @Rule to create the ActivityScenarioRule so it could launch and close the activity. 
+	 - Used the @Test annotation to create my testing methods.
+	 - Used the @Before annotation to navigate, as the user would, to the NoteEditor activity and to retrieve the activity's DecorView and Resources for later use.
+ - I thought it was important to test this feature since notes are a main feature of the app.
+ - Corner cases
+	 - I tested for the creation of a reasonably made card (front and back note), a note with strange characters, a note with a long name, and a note with no front text (invalid).
+ - I got stuck with the spinners, but was able to correctly set them with the proper usage of onData.
+ - ViewMatchers used
+ 	 - isDescendentOfA
+ 	 - isDisplayed
+ 	 - isRoot
+ 	 - withClassName
+ 	 - withContentDescription
+ 	 - withId
+ 	 - withText
+ - ViewActions used
+ 	 - click
+ 	 - closeSoftKeyboard
+ 	 - replaceText
+ 	 - scrollTo
+ - ViewAssertions used
+ 	 - matches
 
-You will need to provide **full test coverage for at least eight features of the app.** A feature could be "creating a new flashcard", "displaying the front and back of a flashcard", or "changing the flashcard font style".
+ - Tested Views
+ 	 - FloatingActionButton to go to new activity.
+ 	 - LinearLayout and AppCompatTextView to ensure view loaded.
+ 	 - Spinners to set the note type and deck type. AppCompatTextView to verify the Spinners changed.
+ 	 - EditText to set the text for both sides of a note. FieldEditLine to confirm I was editing the correct EditText. Also tested to see the front and back EditTexts were cleared after making a note.
+ 	 - Toast to verify the note created message.
 
-We recommend that you identify the features you're most interested in testing, not what you think your interviewers or Onramp would like to see.
+## NoteChangeDeckTest
 
-**Scope your testing to what you can reasonably accomplish by the due date. Your test coverage (as a whole, not per feature) must meet the following requirements:**
+ - Technology Utilization
+	 - I utilized the @RunWith(AndroidJunit4.class) and @LargeTest to use the test class.
+	 - Within the class, I used @Rule to create the ActivityScenarioRule so it could launch and close the activity. 
+	 - Used the @Test annotation to create my testing methods.
+	 - Used the @Before annotation to get the activity Resources for later use and create a deck.
+ - I thought it was important to test this feature since notes are a main feature of the app. Since notes are an important piece of this app, I wanted to test different features relating to them, like changing their deck. I wanted to test whatever a user would find helpful or useful.
+ - Initially, I wasn't sure how to find the notes best before opting for a combination of making a destination deck and using the search functionality in the card browser. Was also a bit hard to follow the code before grouping some code which logically made sense together (such as combining all the steps for executing a deck change or the steps for searching).
+ - ViewMatchers used
+ 	 - isDescendentOfA
+ 	 - isRoot
+ 	 - withClassName
+ 	 - withContentDescription
+ 	 - withId
+ 	 - withText
+ - ViewActions used
+ 	 - click
+ 	 - closeSoftKeyboard
+ 	 - longClick
+ 	 - replaceText
+ 	 - scrollTo
+ - ViewAssertions used
+ 	 - matches
 
-*   Use of at least four different [ViewMatchers](https://developer.android.com/reference/androidx/test/espresso/matcher/ViewMatchers)
-*   Use of at least three different [ViewActions](https://developer.android.com/reference/androidx/test/espresso/action/ViewActions)
-*   Use of at least two different [ViewAssertions](https://developer.android.com/reference/androidx/test/espresso/assertion/ViewAssertions)
-*   Test coverage for at least five different [Views](https://developer.android.com/reference/android/view/View)
+ - TestedViews
+ 	 - FloatingActionBar to create a deck and note.
+ 	 - EditText to name the deck and fill in the front and back of the note.
+ 	 -   FieldEditLine to ensure I selected the correct EditField.
+ 	 - Spinner to set the card type and deck. AppCompatTextView to verify Spinner changes.
+ 	 - AppCompatImageButton to navigate around the activities.
+ 	 - Toolbar to verify the correct selection of other Views (e.g. buttons).
+ 	 - FixedTextView to verity Spinner changes.
+ 	 - ActionMenuItemView and SearchView to trigger a search.
+ 	 - AppCompatImageView to close a search.
+ 	 - OverflowMenuButton to open the overflow menu.
+ 	 - AppcompatTextView again to select the option to change the deck.
+ 	 - AppCompatCheckedTextView to select the deck to change to.
 
-**Note: you will need to detail how your tests meet these requirements in your repository's README file when you submit your project.**
+## NoteDeleteTest
 
-#### A Note on Researching and Plagiarism
+ - Technology Utilization
+	 - I utilized the @RunWith(AndroidJunit4.class) and @LargeTest to use the test class.
+	 - Within the class, I used @Rule to create the ActivityScenarioRule so it could launch and close the activity. 
+	 - Used the @Test annotation to create my testing methods.
+	 - Used the @Before annotation to get the activity Resources for later use, create a deck, and navigate to NoteEditor.
+ - Along with the creation of the note, deletion seems like a useful thing to users. My goal throughout the project was to test the things a user would use more.
+ - I tested cases for single, double, and multiple note deletion to test potential issues depending on number selected/deleted.
+ - I was stuck in deleting multiple notes because I wasn't sure how I could find and select the notes I created to test for deletion. I opted for creating a deck and placing the notes destined for deletion to be in the same deck to make them easier to find together.
+ - ViewMatchers used
+ 	 - isDescendentOfA
+ 	 - isDisplayed
+ 	 - isRoot
+ 	 - withClassName
+ 	 - withContentDescription
+ 	 - withId
+ 	 - withText
+ - ViewActions used
+ 	 - click
+ 	 - closeSoftKeyboard
+ 	 - longClick
+ 	 - replaceText
+ 	 - scrollTo
+ - ViewAssertions used
+ 	 - doesNotExist
+ 	 - matches
 
-You are actively encouraged to research the web, books, videos, or tutorials for this project. That said, we expect all code that is submitted to be your own (e.g. this project should **NOT** be completed with another person). That means that we expect each candidate to refrain from copying and/or pasting code into the project. If we find copied code in your project, we will have to disqualify you. We’ve included some suggested web and video resources at the end of this document.
+ - TestedViews
+ 	 - FloatingActionBar to navigate to NoteEditor and create.
+ 	 - EditText to name deck and fill out front and back note fields.
+ 	 - FieldEditLine to verify the correct choice of EditText
+ 	 - Spinner to set the note type.
+ 	 - AppCompatTextView to veirfy the Spinner change.
+ 	 - AppCompatImageButton to navigate through the app activities.
+ 	 - AppCompatSpinner to filter the deck and Toolbar view to verify Spinner.
+ 	 - FixedTextView to match the Spinner with the deck meant to be selected.
+ 	 - ActionMenuItemView and SearchView for searching for note.
+ 	 - AppCompatImageView to clear the search.
+ 	 - OverflowMenuButton to get to the "Delete Notes" option and ActionMenuView and Toolbar to ensure correct button click.
+ 	 - AppCompatTextView to select the "Delete Notes" option
+ 	 - AppCompatButton to "Undo" a deletion.
 
-## What we're looking for 🌟
+## DeckRenameTest
 
-We will evaluate your project by assessing the overall strength and quality of the following 6 factors: 
+ - Technology Utilization
+	 - I utilized the @RunWith(AndroidJunit4.class) and @LargeTest to use the test class.
+	 - Within the class, I used @Rule to create the ActivityScenarioRule so it could launch and close the activity. 
+	 - Used the @Test annotation to create my testing methods.
+ - Another feature test chosen because it seems like an important piece of the app's usefulness. In between creating and deleting a deck, the need for renaming must definitely come up for a user.
+ - I was stuck, like in the other deck parts, with finding the deck in a list. Implemented a RecyclerViewAction.scrollTo ViewAction to easily help me identify the deck I was searching for.
+ - ViewMatchers used
+ 	 - hasDescendant
+ 	 - isDescendantOfA
+ 	 - isDisplayed()
+ 	 - withClassName
+ 	 - withId
+ 	 - withText
+ - ViewActions used
+ 	 - click
+ 	 - closeSoftKeyboard
+ 	 - longClick
+ - ViewAssertions used
+ 	 - doesNotExist
+ 	 - matches
 
+ - TestedViews
+ 	 - FloatingActionBar to navigate to create a deck.
+ 	 - EditText to rename the deck.
+ 	 - RecyclerView to scrollTo the deck I was looking to rename
+ 	 - FixedTextView to bring up the deck's options after a long click.
+ 	 - AppCompatTextView to select the "Rename deck" option.
+ 	 - FixedEditText to replace the current deck name with the new name.
+ 	 - MDButton to click the rename button.
+ 	 - FixedTextView to verify the change of name and verify deck with old name is no longer (somehow) there.
 
-#### Test Structure
+## NoteTagAddTest
 
-The structure of an [Espresso](https://developer.android.com/training/testing/espresso) test involves finding a View, performing an action on that View, and validating the result. Following this structure will ensure that your tests are logical and easy-to-read. 
+ - Technology Utilization
+	 - I utilized the @RunWith(AndroidJunit4.class) and @LargeTest to use the test class.
+	 - Within the class, I used @Rule to create the ActivityScenarioRule so it could launch and close the activity. 
+	 - Used the @Test annotation to create my testing methods.
+	 - Used the @Before annotation to set up the activity's Resources for later,  navigate to NoteEditor, and close the keyboard that automatically pops up on the activity.
+ - I thought writing a test for this feature was important because it is a nice, extra way to categorize a note. It's also more versatile than organizing by deck since notes can have multiple tags.
+ - Corner cases
+	 - Tested creating tags with simple text of numbers, random characters, long text, as well as attempting to make one with whitespace.
+ - I had some trouble when creating and trying to verify a tag because the app automatically deletes the text in the field when there's a whitespace. Once I found it out, I edited my test strings to not have whitespace so I could correctly verify.
+ - ViewMatchers used
+ 	 - hasDescendant
+ 	 - isDescendantOfA
+ 	 - isDisplayed()
+ 	 - withClassName
+ 	 - withContentDescription
+ 	 - withHint
+ 	 - withId
+ 	 - withText
+ - ViewActions used
+ 	 - click
+ 	 - closeSoftKeyboard
+ 	 - replaceText
+ 	 - scrollTo
+ - ViewAssertions used
+ 	 - doesNotExist
+ 	 - matches
 
-#### Test Variety
+ - TestedViews
+ 	 - FloatingActionBar to navigate to NoteEditor
+ 	 - Toolbar, TextView, MenuItems, and MDButtons to verify a dialog.
+ 	 - LinearLayout to open up the tags dialog.
+ 	 - Spinners to set the note type and deck and AppCompatTextViews to verify the selected options.
+ 	 - EditText to set the front and back note texts with FieldEditLine to verify the distinction between the two.
+ 	 - TextView, EditText, and MDButtons to verify another dialog.
+ 	 - MenuItems to open up a dialog.
+ 	 - EditText to enter the tag name.
+ 	 - MDButton to OK the entered tag name and another MDButton to OK the tag selection in the "Tags" dialog.
+ 	 - MenuItem to save the note (along with the tag).
+ 	 - MenuItem to open the SearchView to search for the new tag.
+ 	 - CheckedTextView to verify tag remains (was saved).
 
-The Espresso testing framework allows you to find the UI component you want to test using [ViewMatchers](https://developer.android.com/reference/androidx/test/espresso/matcher/ViewMatchers), simulate a specific user interaction to perform on that UI component using [ViewActions](https://developer.android.com/reference/androidx/test/espresso/action/ViewActions), and verify that the UI reflects the expected behavior using [ViewAssertions](https://developer.android.com/reference/androidx/test/espresso/assertion/ViewAssertions). To make that process easier, Espresso provides a variety of methods that you can use.
+## NoteTagSearchTest
 
-**It is required that you leverage these methods by using at least four different ViewMatchers, three different ViewActions, and two different ViewAssertions in your project.** 
- 
+ - Technology Utilization
+	 - I utilized the @RunWith(AndroidJunit4.class) and @LargeTest to use the test class.
+	 - Within the class, I used @Rule to create the ActivityScenarioRule so it could launch and close the activity. 
+	 - Used the @Test annotation to create my testing methods.
+	 - Used the @Before annotation to set up the activity's Resources for later use,  navigate to NoteEditor, and close the keyboard that automatically pops up on the activity.
+ - While tags are incredibly useful, they become hectic to manage or find once they grow — and the number of tags can grow quickly because of the versatility they add to the notes. This is why I believed it would be important to test out the search function of tags. This class is one part of it testing the search while in NoteEditor; the other part is in another class which tests searching for tags in the CardBrowser.
+ - Corner Cases
+	 - Like with adding, I test searching for tags of random characters, a long tag, and an empty tag to try and see if anything goes wrong.
+ - I didn't have much trouble with this since I had done many of the same steps when testing the add tag feature.
+ - ViewMatchers used
+ 	 - hasDescendant
+ 	 - isDisplayed()
+ 	 - isRoot
+ 	 - withClassName
+ 	 - withContentDescription
+ 	 - withHint
+ 	 - withId
+ 	 - withText
+ - ViewActions used
+ 	 - click
+ 	 - closeSoftKeyboard
+ 	 - replaceText
+ 	 - scrollTo
+ - ViewAssertions used
+ 	 - doesNotExist
+ 	 - matches
 
-#### Test Coverage
+ - TestedViews
+ 	 - FloatingActionBar to navigate to NoteEditor.
+ 	 - LinearLayout to open up the tags dialog.
+ 	 - MenuItem to open the dialog to enter tag name.
+ 	 - EditText to set the tag name.
+ 	 - MDButton to confirm tag name and go back to "Tags" dialog.
+ 	 - MenuItem to open the SearchView to search for the new tag.
+ 	 - CheckedTextView to verify tag remains (was saved).
+ 	 - SearchView again to verify adding a blank String changed nothing.
 
-[Buttons](https://developer.android.com/guide/topics/ui/controls/button), [TextViews](https://developer.android.com/reference/android/widget/TextView), [EditTexts](https://developer.android.com/reference/android/widget/EditText), and [Spinners](https://developer.android.com/guide/topics/ui/controls/spinner) are just a few commonly used Views within Android apps. Since these are the UI elements that users interact with, it’s important to test a variety of them across different features to ensure that they work properly. **For this reason, it’s mandatory that you test at least eight app features and at least five different Views in your project.**  
+## CardBrowserTagSearchTest
 
-#### Testing Best Practices
+ - Technology Utilization
+	 - Within the class, I used @Rule to create the ActivityScenarioRule so it could launch and close the activity. 
+	 - Used the @Test annotation to create my testing methods.
+	 - Used the @Before annotation to set up the activity's Resources for later use.
+ - This class is the second part of testing the search of tags, but, this time, in the CardBrowser. This is important due to the size of the list tags can make, thereby makint it harder to find and select the ones you want.
+ - Corner Cases
+	 - I tested searching for tags of random characters and a long tag to  try and see if anything goes wrong since it would be hard to believe a user would opt for a tag like these.
+ - This one posed some trouble with navigating since there were a lot of dialogs, menus, and items to select and go through. Made things slow to figure out, but looking at the hierarchy and layout files helped out.
+ - ViewMatchers used
+ 	 - hasDescendant
+ 	 - isDescendantOfA
+ 	 - isDisplayed
+ 	 - isRoot
+ 	 - withClassName
+ 	 - withContentDescription
+ 	 - withHint
+ 	 - withId
+ 	 - withText
+ - ViewActions used
+ 	 - click
+ 	 - closeSoftKeyboard
+ 	 - replaceText
+ 	 - scrollTo
+ - ViewAssertions used
+ 	 - matches
 
-It's important to subscribe to a set of best practices when writing tests for an Android app. Be mindful of these widely accepted principles:
-
-* Tests should be complete and cover any applicable corner cases
-* Tests should be maintainable and provide a solid foundation for future development
-* Test names should be clear
-* Tests should be [organized in directories based on execution environment](https://developer.android.com/training/testing/fundamentals)
-
-#### Test Description
-
-As detailed above, each project submission must include a README file, which provides an overview of each test class you created. This task assesses the critical competency of communicating and documenting technical concepts.
-
-#### Version Control
-
-We expect you to attempt to use version control best practices in your project. We will evaluate this by looking at the frequency of commits, commit messages, and diffs. We don’t expect you to be a pro with git, but we do expect you to be able to commit frequently rather than committing everything all at once.
-
-## Submission Information 🚀
-
-#### Submission Format
-
-This repository will be your starting point. Please download (not clone or fork) this Github repository ([onramp-QE-android-project-take-home](https://github.com/onramp-io/onramp-QE-android-project-take-home)) and upload changes to a newly created repository. Once the testing has been completed, you'll be submitting a link to the new repository you created. Prior to submitting your project, you should update the README file to provide the following information about each test class you created:
-
-* How you utilized testing technologies within that class
-* Your decisions and thought process around 'why' you thought writing this test was important
-* All of the corner cases you handled
-* Where you got stuck and how you handled it
-* The different ViewMatchers, ViewActions, and ViewAssertions you used
-* The different Views you tested and why
-
-Feel free to provide [screenshots](https://developer.android.com/studio/debug/am-screenshot) of any Activity Views that you test.
-
-#### Submission Deadline + Process
-
-You must submit your project by **9:00am PT/12:00pm ET, on March 5, 2021 using [this form](https://docs.google.com/forms/d/e/1FAIpQLSeyphOplL7AJdED7pT-vt5yeQfqpTbyrzXHIrLHViWaZ9yd4Q/viewform).** Be sure that your project is viewable by the Onramp team in a **public** repository (you can make it private after March 19, 2021).
-
-Once you’ve submitted your project, you are expected to stop working on it. Any commits that occur after submission or the deadline will not be reviewed. 
-
-
-## Additional Resources 📚
-
-*   [Android Studio](https://developer.android.com/studio)
-*   [Espresso for noobs pt 1](https://medium.com/@dnkilic/espresso-for-noobs-part-1-bbf1f586d651)
-*   [Espresso recipes for Android](https://medium.com/@dnkilic/espresso-recipes-for-android-afb2466b8137)
-*   [Espresso Cheat sheet](https://android.github.io/android-test/downloads/espresso-cheat-sheet-2.1.0.pdf)
-*   [Fundamentals of Testing on Android](https://developer.android.com/training/testing/fundamentals)
-
-
-
-## AnkiDroid information
-
-<p align="center">
-<img src="docs/graphics/logos/banner_readme.png"/>
-</p>
-
-<a href="https://github.com/ankidroid/Anki-Android/releases"><img src="https://img.shields.io/github/v/release/ankidroid/Anki-Android" alt="release"/></a>
-<a href="https://travis-ci.org/github/ankidroid/Anki-Android"><img src="https://img.shields.io/travis/ankidroid/Anki-Android" alt="build"/></a>
-<a href="https://opencollective.com/ankidroid"><img src="https://img.shields.io/opencollective/all/ankidroid" alt="Open Collective backers and sponsors"/></a>
-<a href="https://github.com/ankidroid/Anki-Android/issues"><img src="https://img.shields.io/github/commit-activity/m/ankidroid/Anki-Android" alt="commit-activity"/></a>
-<a href="https://github.com/ankidroid/Anki-Android/network/members"><img src="https://img.shields.io/github/forks/ankidroid/Anki-Android" alt="forks"/></a>
-<a href="https://github.com/ankidroid/Anki-Android/stargazers"><img src="https://img.shields.io/github/stars/ankidroid/Anki-Android" alt="stars"/></a>
-<a href="https://crowdin.com/project/ankidroid"><img src="https://badges.crowdin.net/ankidroid/localized.svg"></img></a>
-<a href="https://github.com/ankidroid/Anki-Android/graphs/contributors"><img src="https://img.shields.io/github/contributors/ankidroid/Anki-Android" alt="contributors"/></a>
-<a href="https://discord.gg/qjzcRTx"><img src="https://img.shields.io/discord/368267295601983490"></img></a>
-<a href="https://github.com/ankidroid/Anki-Android/blob/master/COPYING"><img src="https://img.shields.io/github/license/ankidroid/Anki-Android" alt="license"/></a>
-</p>
-
-# [AnkiDroid](https://github.com/ankidroid/Anki-Android)
-A semi-official port of the open source [Anki](http://ankisrs.net/index.html) spaced repetition flashcard system to Android. Memorize anything with AnkiDroid!
-
-
-Wiki
-----
-View [Wiki](https://github.com/ankidroid/Anki-Android/wiki)
-
-Help
-----
-Check the [user manual](https://ankidroid.org/docs/manual.html) and the wiki for usage instructions. See the [help page](https://ankidroid.org/docs/help.html) 
-for how to submit a bug report or contact a project member, etc.
-
-License
--------
-[GPL-3.0 License](https://github.com/ankidroid/Anki-Android/blob/master/COPYING)
-[AGPL-3.0 Licence](https://github.com/ankitects/anki/blob/master/LICENSE) for some part of the back-end
+ - TestedViews
+ 	 - FloatingActionBar to navigate to NoteEditor.
+ 	 - AppCompatImageButton to help navigate to the CardBrowser activity with Toolbar to verify the correct Button
+ 	 - Spinner to set the card type and deck name of the dummy note created (since new tags can't be made without one)
+ 	 - EditText views to set the text for the front and back of the note along with FieldEditLine to verify the correct EditText view is selected.
+ 	 - LinearLayout to show "Tags" dialog and MenuItem to bring up the dialog to enter the tag name.
+ 	 - EditText to enter the tag name and verify entered String matches what's shown.
+ 	 - MDButton views to OK the tag name and then OK out of the "Tags" dialog to attach tag to the note.
+ 	 - MenuItem to save the note (and the tag along with it).
+ 	 - AppCompatImageButton to navigate up to DeckPicker with a Toolbar to verify it's the correct button.
+ 	 - OverflowMenuButton to open menu options with an ActionMenuView and Toolbar to ensure it's the correct Button.
+ 	 - AppCompatTextView to show the tags dialog.
+ 	 - ActionMenuItemView to open the SearchView which is then used to enter tag for searching and filtering the list.
+ 	 - CheckedTextView to verify the tag shows.
