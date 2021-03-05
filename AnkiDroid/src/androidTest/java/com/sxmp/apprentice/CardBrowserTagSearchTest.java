@@ -227,7 +227,8 @@ public class CardBrowserTagSearchTest {
         //Check if tag is there
         onView(allOf(withClassName(endsWith("CheckedTextView")),
                 withId(R.id.tags_dialog_tag_item),
-                withText(tagName)));
+                withText(tagName)))
+                .check(matches(isDisplayed()));
     }
 
     @Test
