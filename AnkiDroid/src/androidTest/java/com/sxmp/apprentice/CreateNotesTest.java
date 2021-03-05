@@ -54,9 +54,26 @@ public class CreateNotesTest {
     private View decorView;
     private DeckPicker theActivity;
     private final String FRONT_TEST_STR = "CreateNotesTest front " +
-            (new Random().nextInt(10000000));;
+            (new Random().nextInt(10000000));
     private final String BACK_TEST_STR = "CreateNotesTest back " +
-            (new Random().nextInt(10000000));;
+            (new Random().nextInt(10000000));
+    private final String FRONT_TEST_GIBBERISH = "CreateNotesTest front ss(t3√[.AYƒ‡ﬂª˘ÔWÓ&R" +
+            (new Random().nextInt(10000000));
+    private final String BACK_TEST_GIBBERISH = "CreateNotesTest back `®`∞oΩÂ_;3™¯÷#>°7[¥&" +
+            (new Random().nextInt(10000000));
+    private final String FRONT_TEST_LONG = "CreateNotesTest front Lorem ipsum dolor sit amet," +
+            " consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" +
+            " magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris " +
+            "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit " +
+            "in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint " +
+            "occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim " +
+            "id est laborum" + (new Random().nextInt(10000000));
+    private final String BACK_TEST_LONG = "CreateNotesTest back Sed ut perspiciatis unde " +
+            "omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam " +
+            "rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae" +
+            " vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur " +
+            "aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem " +
+            "sequi nesciunt." + (new Random().nextInt(10000000));
 
 
     @Before
@@ -188,6 +205,66 @@ public class CreateNotesTest {
 
         //Check for Toast message
         onView(withText(containsString(toastTextNumberRemoved)))
+                .inRoot(RootMatchers.withDecorView(not(decorView)))
+                .check(matches(isDisplayed()));
+
+        checkNoteEditorCleared();
+    }
+
+    @Test
+    public void createBasicNoteGibberishTest() {
+        setupNote(FRONT_TEST_GIBBERISH, BACK_TEST_GIBBERISH,
+                "Basic", "Default");
+
+        //Get the string for the Toast message that will appear from plurals
+        String cardsAddedTextString = activityRes.
+                getQuantityString(R.plurals.factadder_cards_added, 1);
+        //Remove the number so we can match text
+        String toastTextNumberRemoved =  cardsAddedTextString.split(" ", 2)[1];
+
+        //Save (Create) the note
+        onView(withId(R.id.action_save)).perform(click());
+
+        //Check for Toast message
+        onView(withText(containsString(toastTextNumberRemoved)))
+                .inRoot(RootMatchers.withDecorView(not(decorView)))
+                .check(matches(isDisplayed()));
+
+        checkNoteEditorCleared();
+    }
+
+    @Test
+    public void createBasicNoteLongTest() {
+        setupNote(FRONT_TEST_LONG, BACK_TEST_LONG,
+                "Basic", "Default");
+
+        //Get the string for the Toast message that will appear from plurals
+        String cardsAddedTextString = activityRes.
+                getQuantityString(R.plurals.factadder_cards_added, 1);
+        //Remove the number so we can match text
+        String toastTextNumberRemoved =  cardsAddedTextString.split(" ", 2)[1];
+
+        //Save (Create) the note
+        onView(withId(R.id.action_save)).perform(click());
+
+        //Check for Toast message
+        onView(withText(containsString(toastTextNumberRemoved)))
+                .inRoot(RootMatchers.withDecorView(not(decorView)))
+                .check(matches(isDisplayed()));
+
+        checkNoteEditorCleared();
+    }
+
+    @Test
+    public void createInvalidNoteTest() {
+        setupNote("", "",
+                "Basic", "Default");
+
+        //Save (Create) the note
+        onView(withId(R.id.action_save)).perform(click());
+
+        //Check for Toast message
+        onView(withText(R.string.note_editor_no_first_field))
                 .inRoot(RootMatchers.withDecorView(not(decorView)))
                 .check(matches(isDisplayed()));
 
